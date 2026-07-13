@@ -458,22 +458,41 @@ document.querySelectorAll('.copy-prompt-btn').forEach(btn => {
 });
 
 // ============ Parser del texto del Prompt 04 ============
-function extraeCampo(texto, label){
-  const re = new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[^:\\n]*:\\s*([\\s\\S]*?)(?=\\n\\s*[A-ZÁÉÍÓÚÑa-záéíóúñ][a-záéíóúñ ]*:|\\n---|$)', 'i');
-  const m = texto.match(re);
-  return m ? m[1].trim() : '';
+// El texto real que da Claude casi siempre trae cada slide en una sola línea continua
+// (sin saltos de línea entre "Campo: Valor Campo2: Valor2"), así que el parser NO puede
+// depender de saltos de línea para saber dónde termina un campo — usa como límite el
+// siguiente campo o título conocido, sin importar si hay espacio o salto de línea entre medio.
+
+function escapaRegex(s){
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function extraeBloque(texto, tituloSlide, siguienteTitulo){
-  // El [^\n]*\n salta el resto de la línea del encabezado (ej. " — HISTORIA Y CONTEXTO (parte 1 — origen)"),
-  // para que el contenido capturado empiece limpio, sin el sobrante del título.
-  const re = new RegExp(tituloSlide.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[^\\n]*\\n([\\s\\S]*?)(?=' + (siguienteTitulo ? siguienteTitulo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : '$') + ')', 'i');
+// Extrae el bloque de texto de una slide usando su título EXACTO conocido (según el Prompt 04),
+// hasta el inicio de la siguiente slide. No requiere salto de línea después del título.
+function extraeBloque(texto, tituloExacto, siguienteMarcador){
+  const re = new RegExp(escapaRegex(tituloExacto) + '\\s*([\\s\\S]*?)(?=' + (siguienteMarcador ? escapaRegex(siguienteMarcador) : '$') + '|$)', 'i');
   const m = texto.match(re);
   return m ? m[1] : '';
 }
 
+// Extrae varios campos que aparecen seguidos en el mismo bloque (con o sin salto de línea entre ellos),
+// usando cada campo siguiente como límite del anterior — así no importa el orden de saltos de línea,
+// ni que algún campo intermedio (como Facebook) simplemente no aparezca.
+function parseCamposSecuenciales(bloque, campos){
+  const resultado = {};
+  for(let i = 0; i < campos.length; i++){
+    const { key, patron } = campos[i];
+    const restantes = campos.slice(i + 1).map(c => c.patron);
+    const limite = restantes.length ? '(?:' + restantes.join('|') + ')|$' : '$';
+    const re = new RegExp(patron + '[^:\\n]*:\\s*([\\s\\S]*?)(?=' + limite + ')', 'i');
+    const m = bloque.match(re);
+    resultado[key] = m ? m[1].trim() : '';
+  }
+  return resultado;
+}
+
 function limpiaLineas(bloque){
-  return bloque.split('\n').map(l => l.replace(/^[-•\s]+/, '').trim()).filter(l => l && l !== '---');
+  return bloque.split('\n').map(l => l.replace(/^[-*•\s]+/, '').trim()).filter(l => l && l !== '---');
 }
 
 function limpiaParrafo(bloque){
@@ -495,45 +514,57 @@ document.getElementById('btn-parsear').addEventListener('click', () => {
   }
 
   try{
-    const bPortada = extraeBloque(texto, 'SLIDE 1', 'SLIDE 2');
-    document.getElementById('f-nombre').value = extraeCampo(bPortada, 'Nombre cliente');
-    document.getElementById('f-expedientede').value = extraeCampo(bPortada, 'Expediente de');
+    const bPortada = extraeBloque(texto, 'SLIDE 1 — PORTADA', 'SLIDE 2');
+    const campPortada = parseCamposSecuenciales(bPortada, [
+      { key:'nombre', patron:'Nombre cliente' },
+      { key:'expdiente', patron:'Expediente de' }
+    ]);
+    document.getElementById('f-nombre').value = campPortada.nombre;
+    document.getElementById('f-expedientede').value = campPortada.expdiente;
 
-    const bArq = extraeBloque(texto, 'SLIDE 2', 'SLIDE 3');
-    document.getElementById('f-arq1').value = extraeCampo(bArq, 'V[eé]rtice superior');
-    document.getElementById('f-arq2').value = extraeCampo(bArq, 'V[eé]rtice inferior izquierdo');
-    document.getElementById('f-arq3').value = extraeCampo(bArq, 'V[eé]rtice inferior derecho');
+    const bArq = extraeBloque(texto, 'SLIDE 2 — ARQUETIPOS', 'SLIDE 3');
+    const campArq = parseCamposSecuenciales(bArq, [
+      { key:'arq1', patron:'V[eé]rtice superior' },
+      { key:'arq2', patron:'V[eé]rtice inferior izquierdo' },
+      { key:'arq3', patron:'V[eé]rtice inferior derecho' }
+    ]);
+    document.getElementById('f-arq1').value = campArq.arq1;
+    document.getElementById('f-arq2').value = campArq.arq2;
+    document.getElementById('f-arq3').value = campArq.arq3;
 
-    const bRedes = extraeBloque(texto, 'SLIDE 3', 'SLIDE 4');
+    const bRedes = extraeBloque(texto, 'SLIDE 3 — REDES SOCIALES', 'SLIDE 4');
+    const campRedes = parseCamposSecuenciales(bRedes, [
+      { key:'Instagram', patron:'Instagram' },
+      { key:'Facebook', patron:'Facebook' },
+      { key:'TikTok', patron:'TikTok' },
+      { key:'YouTube', patron:'YouTube' }
+    ]);
     document.querySelectorAll('.net-chip').forEach(chip => {
-      const val = extraeCampo(bRedes, chip.dataset.net);
-      if(val && val.length > 0){
-        chip.classList.add('active');
-      } else {
-        chip.classList.remove('active');
-      }
+      const val = campRedes[chip.dataset.net] || '';
+      const activo = val && !/sin\s+(cuenta|canal)/i.test(val);
+      chip.classList.toggle('active', !!activo);
     });
     renderNetUploads();
 
-    const h1 = extraeBloque(texto, 'SLIDE 4', 'SLIDE 5');
-    const h2 = extraeBloque(texto, 'SLIDE 5', 'SLIDE 6');
-    const h3 = extraeBloque(texto, 'SLIDE 6', 'SLIDE 7');
+    const h1 = extraeBloque(texto, 'SLIDE 4 — HISTORIA Y CONTEXTO (parte 1 — origen)', 'SLIDE 5');
+    const h2 = extraeBloque(texto, 'SLIDE 5 — HISTORIA Y CONTEXTO (parte 2 — quiebre)', 'SLIDE 6');
+    const h3 = extraeBloque(texto, 'SLIDE 6 — HISTORIA Y CONTEXTO (parte 3 — hoy)', 'SLIDE 7');
     const historiaCompleta = [h1, h2, h3].map(limpiaParrafo).filter(Boolean).join('\n\n');
     document.getElementById('f-historia').value = historiaCompleta;
 
-    const bObjNeg = extraeBloque(texto, 'SLIDE 7', 'SLIDE 8');
+    const bObjNeg = extraeBloque(texto, 'SLIDE 7 — OBJETIVOS ASPIRACIONALES (negocio)', 'SLIDE 8');
     document.getElementById('f-objetivos-negocio').value = limpiaLineas(bObjNeg).join('\n');
 
-    const bObjPer = extraeBloque(texto, 'SLIDE 8', 'SLIDE 9');
+    const bObjPer = extraeBloque(texto, 'SLIDE 8 — OBJETIVOS PERSONALES', 'SLIDE 9');
     document.getElementById('f-objetivos-personales').value = limpiaLineas(bObjPer).join('\n');
 
-    const bTono = extraeBloque(texto, 'SLIDE 9', 'SLIDE 10');
+    const bTono = extraeBloque(texto, 'SLIDE 9 — TONO Y ESTILO DE COMUNICACION', 'SLIDE 10');
     document.getElementById('f-tono').value = limpiaParrafo(bTono);
 
-    const bValores = extraeBloque(texto, 'SLIDE 10', 'SLIDE 11');
+    const bValores = extraeBloque(texto, 'SLIDE 10 — VALORES Y CREENCIAS', 'SLIDE 11');
     document.getElementById('f-valores').value = limpiaLineas(bValores).map(l => l.replace(/^Valor\s*\d+\s*:?\s*/i,'')).join('\n');
 
-    const bDesafios = extraeBloque(texto, 'SLIDE 11', 'SLIDE 12');
+    const bDesafios = extraeBloque(texto, 'SLIDE 11 — DESAFIOS ACTUALES', 'SLIDE 12');
     const desafiosLineas = limpiaLineas(bDesafios).map(l => {
       const m2 = l.match(/DESAFIO\s*\d+\s*:?\s*(.*?)\s*[—-]\s*(.*)/i);
       if(m2) return `${m2[1].trim()} | ${m2[2].trim()}`;
@@ -544,7 +575,7 @@ document.getElementById('btn-parsear').addEventListener('click', () => {
     });
     document.getElementById('f-desafios').value = desafiosLineas.join('\n');
 
-    const bEsencia = extraeBloque(texto, 'SLIDE 12', 'SLIDE 13');
+    const bEsencia = extraeBloque(texto, 'SLIDE 12 — ESENCIA DE LA MARCA', 'SLIDE 13');
     document.getElementById('f-esencia').value = limpiaParrafo(bEsencia);
 
     status.textContent = 'Listo. Revisa cada campo abajo antes de generar el PDF.';
