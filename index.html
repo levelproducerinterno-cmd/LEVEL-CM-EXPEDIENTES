@@ -85,9 +85,9 @@
   .arq-wrap{position:relative;width:600px;height:508px;margin:0 auto;}
   .arq-triangle-img{width:100%;height:100%;display:block;}
   .arq-label{position:absolute;font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;letter-spacing:0.1em;color:#111;text-transform:uppercase;white-space:nowrap;}
-  .arq-label.arq-top{top:-10px;left:50%;transform:translateX(-50%);}
-  .arq-label.arq-left{bottom:60px;left:-40px;}
-  .arq-label.arq-right{bottom:60px;right:-40px;}
+  .arq-label.arq-top{top:-14px;left:50%;transform:translateX(-50%);}
+  .arq-label.arq-left{bottom:58px;left:15.6%;transform:translateX(calc(-100% - 22px));}
+  .arq-label.arq-right{bottom:58px;left:84.4%;transform:translateX(22px);}
 
   /* redes sociales */
   .phones-row{display:flex;justify-content:center;gap:60px;height:100%;align-items:center;}
@@ -105,7 +105,7 @@
   .personal-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;font-size:30px;text-align:center;margin-bottom:30px;color:#111;}
 
   /* desafios */
-  .desafio-grid{display:flex;gap:30px;height:100%;align-items:flex-start;padding-top:20px;justify-content:center;}
+  .desafio-grid{display:flex;gap:30px;justify-content:center;align-items:center;}
   .desafio-card{width:280px;border-radius:14px;overflow:hidden;background:#111;}
   .desafio-card .d-title{background:#fff;color:#111;font-weight:700;text-align:center;padding:22px 10px;font-size:17px;letter-spacing:0.05em;text-transform:uppercase;}
   .desafio-card .d-body{padding:26px 18px;color:#fff;text-align:center;font-size:15px;line-height:1.5;min-height:170px;}
@@ -424,7 +424,7 @@ Miedo a lo falso | Temen que el contenido se vea poco genuino"></textarea>
   <div class="exp-page" id="p-desafios">
     <div class="header-bar"><div class="brandmark"><strong>LEVEL</strong> PRODUCER</div><div class="slidetitle">Desafíos Actuales</div></div>
     <div class="header-line"></div>
-    <div class="body-area"><div class="desafio-grid" id="r-desafios"></div></div>
+    <div class="body-area centrado"><div class="desafio-grid" id="r-desafios"></div></div>
   </div>
 
   <div class="exp-page" id="p-esencia">
@@ -486,7 +486,10 @@ function parseCamposSecuenciales(bloque, campos){
     const limite = restantes.length ? '(?:' + restantes.join('|') + ')|$' : '$';
     const re = new RegExp(patron + '[^:\\n]*:\\s*([\\s\\S]*?)(?=' + limite + ')', 'i');
     const m = bloque.match(re);
-    resultado[key] = m ? m[1].trim() : '';
+    let valor = m ? m[1].trim() : '';
+    // Quita separadores "---" (u otros guiones sueltos) que a veces quedan pegados al final del valor
+    valor = valor.replace(/[\s-]*---+[\s-]*$/,'').trim();
+    resultado[key] = valor;
   }
   return resultado;
 }
