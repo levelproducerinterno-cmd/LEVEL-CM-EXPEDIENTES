@@ -81,13 +81,17 @@
   .text-block{display:flex;align-items:center;justify-content:center;height:100%;}
   .text-block p{font-size:22px;line-height:1.6;color:#232323;text-align:center;max-width:1150px;margin:0 0 18px;}
 
-  /* arquetipos */
-  .arq-wrap{position:relative;width:600px;height:508px;margin:0 auto;}
-  .arq-triangle-img{width:100%;height:100%;display:block;}
-  .arq-label{position:absolute;font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;letter-spacing:0.1em;color:#111;text-transform:uppercase;white-space:nowrap;}
-  .arq-label.arq-top{top:-14px;left:50%;transform:translateX(-50%);}
-  .arq-label.arq-left{bottom:58px;left:15.6%;transform:translateX(calc(-100% - 22px));}
-  .arq-label.arq-right{bottom:58px;left:84.4%;transform:translateX(22px);}
+  /* arquetipos y descripcion */
+  .arq-content{display:flex;flex-direction:column;height:100%;position:relative;}
+  .arq-triangle-mark{position:absolute;top:-10px;right:4px;width:92px;height:78px;opacity:0.16;}
+  .arq-eyebrow{font-size:14px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--rojo);margin-bottom:10px;}
+  .arq-pilar{text-align:center;padding:0 40px;margin-bottom:26px;}
+  .arq-pilar .arq-nombre{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:42px;letter-spacing:0.02em;color:#111;margin-bottom:12px;}
+  .arq-pilar .arq-desc{font-size:19px;line-height:1.55;color:#2a2a2a;max-width:1180px;margin:0 auto;max-height:150px;overflow:hidden;}
+  .arq-secundarios{display:flex;gap:36px;justify-content:center;align-items:stretch;flex:1;}
+  .arq-sec-card{width:520px;background:#fff;border:1px solid #e4e0d6;border-radius:6px;padding:24px 30px;text-align:center;display:flex;flex-direction:column;}
+  .arq-sec-card .arq-nombre{font-family:'Montserrat',sans-serif;font-weight:700;font-size:21px;letter-spacing:0.06em;text-transform:uppercase;color:#111;margin-bottom:10px;}
+  .arq-sec-card .arq-desc{font-size:16px;line-height:1.55;color:#333;max-height:190px;overflow:hidden;}
 
   /* redes sociales */
   .phones-row{display:flex;justify-content:center;gap:60px;height:100%;align-items:center;}
@@ -208,10 +212,10 @@ Nombre cliente:
 Expediente de:
 
 ---
-SLIDE 2 — ARQUETIPOS
-Vértice superior (pilar):
-Vértice inferior izquierdo:
-Vértice inferior derecho:
+SLIDE 2 — ARQUETIPOS Y DESCRIPCIÓN
+Vértice superior (pilar): [Nombre del arquetipo] — [Descripción breve: qué es y por qué aplica a esta marca]
+Vértice inferior izquierdo: [Nombre del arquetipo] — [Descripción breve: por qué aplica]
+Vértice inferior derecho: [Nombre del arquetipo] — [Descripción breve: por qué aplica]
 
 ---
 SLIDE 3 — REDES SOCIALES
@@ -299,12 +303,22 @@ Nombre cliente:
       </div>
     </div>
 
-    <label style="margin-top:10px;">Arquetipos (1 pilar + hasta 2 secundarios)</label>
+    <label style="margin-top:10px;">Arquetipos y descripción (1 pilar + hasta 2 secundarios)</label>
     <div class="grid3">
-      <div class="field"><input type="text" id="f-arq1" placeholder="Vértice superior (pilar)"></div>
-      <div class="field"><input type="text" id="f-arq2" placeholder="Vértice inferior izquierdo"></div>
-      <div class="field"><input type="text" id="f-arq3" placeholder="Vértice inferior derecho"></div>
+      <div class="field">
+        <input type="text" id="f-arq1" placeholder="Vértice superior (pilar)">
+        <textarea id="f-arq1-desc" placeholder="Descripción / por qué aplica" style="margin-top:8px;min-height:90px;"></textarea>
+      </div>
+      <div class="field">
+        <input type="text" id="f-arq2" placeholder="Vértice inferior izquierdo">
+        <textarea id="f-arq2-desc" placeholder="Descripción / por qué aplica" style="margin-top:8px;min-height:90px;"></textarea>
+      </div>
+      <div class="field">
+        <input type="text" id="f-arq3" placeholder="Vértice inferior derecho">
+        <textarea id="f-arq3-desc" placeholder="Descripción / por qué aplica" style="margin-top:8px;min-height:90px;"></textarea>
+      </div>
     </div>
+    <div class="hint">Si pegaste arriba el texto del Prompt 04 con el formato "Nombre — Descripción", estos campos ya se llenaron solos.</div>
 
     <div class="field">
       <label>Redes sociales activas</label>
@@ -368,14 +382,28 @@ Miedo a lo falso | Temen que el contenido se vea poco genuino"></textarea>
   </div>
 
   <div class="exp-page" id="p-arquetipos">
-    <div class="header-bar"><div class="brandmark"><strong>LEVEL</strong> PRODUCER</div><div class="slidetitle">Arquetipos</div></div>
+    <div class="header-bar"><div class="brandmark"><strong>LEVEL</strong> PRODUCER</div><div class="slidetitle">Arquetipos y Descripción</div></div>
     <div class="header-line"></div>
-    <div class="body-area centrado">
-      <div class="arq-wrap">
-        <img class="arq-triangle-img" src="data:image/png;base64,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">
-        <div class="arq-label arq-top" id="r-arq1-txt">ARQUETIPO 1</div>
-        <div class="arq-label arq-left" id="r-arq2-txt">ARQUETIPO 2</div>
-        <div class="arq-label arq-right" id="r-arq3-txt">ARQUETIPO 3</div>
+    <div class="body-area">
+      <div class="arq-content">
+        <img class="arq-triangle-mark" src="data:image/png;base64,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">
+        <div class="arq-pilar">
+          <div class="arq-eyebrow">Arquetipo Pilar</div>
+          <div class="arq-nombre" id="r-arq1-txt">ARQUETIPO 1</div>
+          <div class="arq-desc" id="r-arq1-desc"></div>
+        </div>
+        <div class="arq-secundarios">
+          <div class="arq-sec-card">
+            <div class="arq-eyebrow">Arquetipo Secundario</div>
+            <div class="arq-nombre" id="r-arq2-txt">ARQUETIPO 2</div>
+            <div class="arq-desc" id="r-arq2-desc"></div>
+          </div>
+          <div class="arq-sec-card">
+            <div class="arq-eyebrow">Arquetipo Secundario</div>
+            <div class="arq-nombre" id="r-arq3-txt">ARQUETIPO 3</div>
+            <div class="arq-desc" id="r-arq3-desc"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -498,6 +526,15 @@ function limpiaLineas(bloque){
   return bloque.split('\n').map(l => l.replace(/^[-*•\s]+/, '').trim()).filter(l => l && l !== '---');
 }
 
+// Separa "Nombre — Descripción" (o "Nombre - Descripción") en sus dos partes.
+// Si no hay separador, todo el texto se toma como nombre y la descripción queda vacía.
+function splitNombreDesc(valor){
+  const v = (valor || '').trim();
+  const m = v.match(/^(.*?)\s*[—-]\s*([\s\S]*)$/);
+  if(m && m[2].trim()) return { nombre: m[1].trim(), desc: m[2].trim() };
+  return { nombre: v, desc: '' };
+}
+
 function limpiaParrafo(bloque){
   return bloque
     .split('\n')
@@ -525,15 +562,22 @@ document.getElementById('btn-parsear').addEventListener('click', () => {
     document.getElementById('f-nombre').value = campPortada.nombre;
     document.getElementById('f-expedientede').value = campPortada.expdiente;
 
-    const bArq = extraeBloque(texto, 'SLIDE 2 — ARQUETIPOS', 'SLIDE 3');
+    let bArq = extraeBloque(texto, 'SLIDE 2 — ARQUETIPOS Y DESCRIPCIÓN', 'SLIDE 3');
+    if(!bArq.trim()) bArq = extraeBloque(texto, 'SLIDE 2 — ARQUETIPOS', 'SLIDE 3');
     const campArq = parseCamposSecuenciales(bArq, [
       { key:'arq1', patron:'V[eé]rtice superior' },
       { key:'arq2', patron:'V[eé]rtice inferior izquierdo' },
       { key:'arq3', patron:'V[eé]rtice inferior derecho' }
     ]);
-    document.getElementById('f-arq1').value = campArq.arq1;
-    document.getElementById('f-arq2').value = campArq.arq2;
-    document.getElementById('f-arq3').value = campArq.arq3;
+    const arq1Split = splitNombreDesc(campArq.arq1);
+    const arq2Split = splitNombreDesc(campArq.arq2);
+    const arq3Split = splitNombreDesc(campArq.arq3);
+    document.getElementById('f-arq1').value = arq1Split.nombre;
+    document.getElementById('f-arq1-desc').value = arq1Split.desc;
+    document.getElementById('f-arq2').value = arq2Split.nombre;
+    document.getElementById('f-arq2-desc').value = arq2Split.desc;
+    document.getElementById('f-arq3').value = arq3Split.nombre;
+    document.getElementById('f-arq3-desc').value = arq3Split.desc;
 
     const bRedes = extraeBloque(texto, 'SLIDE 3 — REDES SOCIALES', 'SLIDE 4');
     const campRedes = parseCamposSecuenciales(bRedes, [
@@ -632,6 +676,17 @@ function renderNetUploads(){
 }
 renderNetUploads();
 
+// Reduce el tamaño de fuente de un elemento hasta que su contenido quepa dentro
+// de su propia caja (evita que la descripción del arquetipo se corte).
+function ajustaTextoAlContenedor(elemento, tamMax, tamMin){
+  let tam = tamMax;
+  elemento.style.fontSize = tam + 'px';
+  while(elemento.scrollHeight > elemento.clientHeight + 1 && tam > tamMin){
+    tam -= 1;
+    elemento.style.fontSize = tam + 'px';
+  }
+}
+
 async function waitForFonts(){
   const combos = [
     '600 17px "Cormorant Garamond"','500 66px "Cormorant Garamond"','500 30px "Cormorant Garamond"',
@@ -657,8 +712,11 @@ document.getElementById('btn-generar').addEventListener('click', async () => {
   const nombre = document.getElementById('f-nombre').value.trim() || 'Nombre Cliente';
   const expDe = document.getElementById('f-expedientede').value.trim() || 'Expediente de:';
   const arq1 = document.getElementById('f-arq1').value.trim() || 'Arquetipo 1';
+  const arq1Desc = document.getElementById('f-arq1-desc').value.trim();
   const arq2 = document.getElementById('f-arq2').value.trim() || 'Arquetipo 2';
+  const arq2Desc = document.getElementById('f-arq2-desc').value.trim();
   const arq3 = document.getElementById('f-arq3').value.trim() || 'Arquetipo 3';
+  const arq3Desc = document.getElementById('f-arq3-desc').value.trim();
   const historiaParrafos = document.getElementById('f-historia').value.split('\n').map(s=>s.trim()).filter(Boolean);
   const objNegocio = document.getElementById('f-objetivos-negocio').value.split('\n').map(s=>s.trim()).filter(Boolean);
   const objPersonal = document.getElementById('f-objetivos-personales').value.split('\n').map(s=>s.trim()).filter(Boolean);
@@ -673,8 +731,11 @@ document.getElementById('btn-generar').addEventListener('click', async () => {
   document.getElementById('r-nombre-cierre').textContent = nombre;
 
   document.getElementById('r-arq1-txt').textContent = arq1.toUpperCase();
+  document.getElementById('r-arq1-desc').textContent = arq1Desc;
   document.getElementById('r-arq2-txt').textContent = arq2.toUpperCase();
+  document.getElementById('r-arq2-desc').textContent = arq2Desc;
   document.getElementById('r-arq3-txt').textContent = arq3.toUpperCase();
+  document.getElementById('r-arq3-desc').textContent = arq3Desc;
 
   const phonesRow = document.getElementById('r-phones-row');
   phonesRow.innerHTML = '';
@@ -739,6 +800,10 @@ document.getElementById('btn-generar').addEventListener('click', async () => {
 
   await waitForFonts();
   await new Promise(r => setTimeout(r, 80));
+
+  ajustaTextoAlContenedor(document.getElementById('r-arq1-desc'), 19, 13);
+  ajustaTextoAlContenedor(document.getElementById('r-arq2-desc'), 16, 12);
+  ajustaTextoAlContenedor(document.getElementById('r-arq3-desc'), 16, 12);
 
   status.textContent = 'Renderizando slides...';
   const pageIds = [
